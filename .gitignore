@@ -1,5 +1,5 @@
 # Dataset (kept locally, not committed)
-plantvillage/
+CropCheckUp-dataset/
 *.zip
 
 # Python caches and environments
