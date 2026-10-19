@@ -1,0 +1,21 @@
+# Dataset (kept locally, not committed)
+plantvillage/
+*.zip
+
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Local tooling and generated files
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# IDE files
+.idea/
+.vscode/
