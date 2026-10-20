@@ -1,16 +1,20 @@
-"""Unpack the Kaggle run's per-class zips into <plantvillage>/segmented/<class>/<name>.png.
+"""Unpack the Kaggle runs' per-class zips into <plantvillage>/segmented/<class>/<name>.png.
 
-Fully transparent pixels still carry the original background colour; they are zeroed here so the
-background can't come back via .convert("RGB") and so the PNGs compress better. Visible pixels
-(including soft edges) are unchanged.
+Fully transparent pixels still carry the original background colour in older runs; they are zeroed
+here so the background can't come back via .convert("RGB") and so the PNGs compress better.
+Visible pixels (including soft edges) are unchanged.
 
-Usage: python unpack_segmented.py KAGGLE_OUTPUT_DIR PLANTVILLAGE_DIR
+The manifest is rebuilt from the images rather than taken from Kaggle, since a crashed run never
+writes one: per-class counts checked against raw/, plus the fully opaque images, which are exactly
+the close-ups where the mask was too small and the whole image was kept.
+
+Usage: python unpack_segmented.py ZIPS_DIR PLANTVILLAGE_DIR
 """
 import io
 import json
-import shutil
 import sys
 import zipfile
+from collections import Counter
 from multiprocessing import Pool
 from pathlib import Path
 
@@ -24,6 +28,7 @@ def blank_and_save(args):
     rgba[rgba[..., 3] == 0, :3] = 0
     out.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray(rgba).save(out, optimize=True)
+    return out.parent.name, out.name, bool((rgba[..., 3] == 255).all())
 
 
 def members(zips, out_root):
@@ -38,9 +43,18 @@ if __name__ == "__main__":
     src, plantvillage = Path(sys.argv[1]), Path(sys.argv[2])
     zips = sorted(src.glob("segmented__*.zip"))
     with Pool() as pool:
-        n = sum(1 for _ in pool.imap_unordered(blank_and_save, members(zips, plantvillage), chunksize=64))
-    shutil.copy(src / "manifest.json", plantvillage / "segmented" / "manifest.json")
-    manifest = json.loads((src / "manifest.json").read_text())
-    print(f"{len(zips)} class zips, {n} PNGs written to {plantvillage / 'segmented'}")
-    print(f"not started (time budget): {manifest['skipped_for_time']}")
-    print(f"failures: {len(manifest['failures'])}, kept whole: {len(manifest['fallback_full_image'])}")
+        results = list(pool.imap_unordered(blank_and_save, members(zips, plantvillage), chunksize=64))
+
+    counts = Counter(cls for cls, _, _ in results)
+    raw_counts = {d.name: sum(1 for _ in d.iterdir()) for d in (plantvillage / "raw").iterdir() if d.is_dir()}
+    mismatched = {c: {"raw": n, "segmented": counts.get(c, 0)} for c, n in raw_counts.items() if counts.get(c, 0) != n}
+    manifest = {
+        "total": len(results),
+        "classes": dict(sorted(counts.items())),
+        "mismatched_vs_raw": mismatched,
+        "fallback_full_image": sorted(f"{cls}/{name}" for cls, name, opaque in results if opaque),
+    }
+    (plantvillage / "segmented" / "manifest.json").write_text(json.dumps(manifest, indent=1))
+    print(f"{len(zips)} class zips, {len(results)} PNGs written to {plantvillage / 'segmented'}")
+    print(f"classes not matching raw/: {mismatched or 'none'}")
+    print(f"kept whole (mask below threshold): {len(manifest['fallback_full_image'])}")
