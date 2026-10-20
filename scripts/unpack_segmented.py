@@ -8,7 +8,7 @@ The manifest is rebuilt from the images rather than taken from Kaggle, since a c
 writes one: per-class counts checked against raw/, plus the fully opaque images, which are exactly
 the close-ups where the mask was too small and the whole image was kept.
 
-Usage: python unpack_segmented.py ZIPS_DIR PLANTVILLAGE_DIR
+Usage: python scripts/unpack_segmented.py ZIPS_DIR PLANTVILLAGE_DIR
 """
 import io
 import json
