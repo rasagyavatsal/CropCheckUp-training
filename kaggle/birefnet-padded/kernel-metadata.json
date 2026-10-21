@@ -1,0 +1,17 @@
+{
+  "id": "rasagyavatsal/cropcheckup-birefnet-padded",
+  "title": "CropCheckUp BiRefNet Padded",
+  "code_file": "birefnet_padded.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [
+    "rasagyavatsal/cropcheckup-dataset"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
