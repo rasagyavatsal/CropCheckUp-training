@@ -84,3 +84,26 @@ The training run writes `plant_disease_model.onnx`, `labels.txt`,
 `metrics.json`, `history.json`, `split.json` and `best.pt`. To use a new model,
 copy `plant_disease_model.onnx` into the app's `public/models/`, and upload it to
 the app's Cloud Storage bucket as described in the app's README.
+
+## License and attribution
+
+The code and notebooks are licensed under the [MIT License](LICENSE).
+
+Models trained here, including `plant_disease_model.onnx`, are licensed under
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/):
+non-commercial use only, with adaptations shared under the same license. They
+are trained on the PlantVillage dataset, distributed on Kaggle as
+[`abdallahalidev/plantvillage-dataset`](https://www.kaggle.com/datasets/abdallahalidev/plantvillage-dataset)
+under CC BY-NC-SA 4.0. The segmented dataset derived from it carries the same
+terms. The MIT License for the code grants no rights to the data or the models.
+
+- **PlantVillage:** Mohanty, S. P., Hughes, D. P., & Salathé, M. (2016). "Using
+  deep learning for image-based plant disease detection." *Frontiers in Plant
+  Science*, 7, 1419. <https://doi.org/10.3389/fpls.2016.01419>
+- **ConvNeXt** (MIT), the pretrained backbone: Liu, Z., Mao, H., Wu, C.-Y.,
+  Feichtenhofer, C., Darrell, T., & Xie, S. (2022). "A ConvNet for the 2020s."
+  *CVPR*, 11976–11986.
+- **BiRefNet** (MIT), used for background removal: Zheng, P., Gao, D., Fan,
+  D.-P., Liu, L., Laaksonen, J., Ouyang, W., & Sebe, N. (2024). "Bilateral
+  Reference for High-Resolution Dichotomous Image Segmentation." *CAAI
+  Artificial Intelligence Research*, 3, 9150038.
